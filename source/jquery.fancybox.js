@@ -91,16 +91,24 @@
 			content: null,
 			title: null,
 
+            // Localization - defaults to english strings
+            texts: {
+                next: 'Next',
+                prev: 'Previous',
+                close: 'Close',
+                error: 'The requested content cannot be loaded.<br/>Please try again later.'
+            },
+
 			// HTML templates
 			tpl: {
 				wrap: '<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
 				image: '<img class="fancybox-image" src="{href}" alt="" />',
 				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>',
 				swf: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
-				error: '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
-				closeBtn: '<div title="Close" class="fancybox-item fancybox-close"></div>',
-				next: '<a title="Next" class="fancybox-nav fancybox-next"><span></span></a>',
-				prev: '<a title="Previous" class="fancybox-nav fancybox-prev"><span></span></a>'
+				error: '<p class="fancybox-error">{error}</p>',
+				closeBtn: '<div title="{close}" class="fancybox-item fancybox-close"></div>',
+				next: '<a title="{next}" class="fancybox-nav fancybox-next"><span></span></a>',
+				prev: '<a title="{prev}" class="fancybox-nav fancybox-prev"><span></span></a>'
 			},
 
 			// Properties for each animation type
@@ -685,6 +693,7 @@
 				return;
 			}
 
+            F.coming.tpl.error = F.coming.tpl.error.replace('{error}', current.texts.error);
 			$.extend(F.coming, {
 				type      : 'html',
 				width     : 'auto',
@@ -1176,16 +1185,19 @@
 
 			//Create a close button
 			if (current.closeBtn) {
+			    current.tpl.closeBtn = current.tpl.closeBtn.replace('{close}', current.texts.close);
 				$(current.tpl.closeBtn).appendTo(F.skin).bind('click.fb', F.close);
 			}
 
 			//Create navigation arrows
 			if (current.arrows && F.group.length > 1) {
 				if (current.loop || current.index > 0) {
+				    current.tpl.prev = current.tpl.prev.replace('{prev}', current.texts.prev);
 					$(current.tpl.prev).appendTo(F.outer).bind('click.fb', F.prev);
 				}
 
 				if (current.loop || current.index < F.group.length - 1) {
+				    current.tpl.next = current.tpl.next.replace('{next}', current.texts.next);
 					$(current.tpl.next).appendTo(F.outer).bind('click.fb', F.next);
 				}
 			}
