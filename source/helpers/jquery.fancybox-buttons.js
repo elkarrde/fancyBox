@@ -5,8 +5,10 @@
  *
  * Usage:
  *     $(".fancybox").fancybox({
- *         buttons: {
- *             position : 'top'
+ *         helpers : {
+ *             buttons: {
+ *                 position : 'top'
+ *             }
  *         }
  *     });
  *
@@ -26,13 +28,14 @@
 	        pause: 'Pause slideshow',
 	        toggle: 'Toggle size'
 	    },
-		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;"></a></li><li><a class="btnPlay" title="Start slideshow" href="javascript:;"></a></li><li><a class="btnNext" title="Next" href="javascript:;"></a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;"></a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();"></a></li></ul></div>',
-		list: null,
+		tpl  : '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;"></a></li><li><a class="btnPlay" title="Start slideshow" href="javascript:;"></a></li><li><a class="btnNext" title="Next" href="javascript:;"></a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;"></a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();"></a></li></ul></div>',
+		list : null,
 		buttons: null,
 
 		beforeLoad: function (opts, obj) {
 			//Remove self if gallery do not have at least two items
-			if (obj.group.length < 2) {
+
+			if (opts.skipSingle && obj.group.length < 2) {
 				obj.helpers.buttons = false;
 				obj.closeBtn = true;
 
