@@ -1,7 +1,7 @@
 /*!
  * fancyBox - jQuery Plugin
  * version: 2.1.5 (Fri, 14 Jun 2013)
- * @requires jQuery v1.6 or later
+ * requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
  * License: www.fancyapps.com/fancybox/#license
@@ -261,7 +261,7 @@
 					if (isQuery(element)) {
 						obj = {
 							href    : element.data('fancybox-href') || element.attr('href'),
-							title   : element.data('fancybox-title') || element.attr('title'),
+							title   : $('<div/>').text( element.data('fancybox-title') || element.attr('title') ).html(),
 							isDom   : true,
 							element : element
 						};
@@ -363,11 +363,15 @@
 		cancel: function () {
 			var coming = F.coming;
 
-			if (!coming || false === F.trigger('onCancel')) {
+			if (coming && false === F.trigger('onCancel')) {
 				return;
 			}
 
 			F.hideLoading();
+
+			if (!coming) {
+				return;
+			}
 
 			if (F.ajaxLoad) {
 				F.ajaxLoad.abort();
@@ -630,6 +634,8 @@
 					left : (viewport.w * 0.5) + viewport.x
 				});
 			}
+
+			F.trigger('onLoading');
 		},
 
 		getViewport: function () {
@@ -741,24 +747,22 @@
 		trigger: function (event, o) {
 			var ret, obj = o || F.coming || F.current;
 
-			if (!obj) {
-				return;
-			}
+			if (obj) {
+				if ($.isFunction( obj[event] )) {
+					ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
+				}
 
-			if ($.isFunction( obj[event] )) {
-				ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
-			}
+				if (ret === false) {
+					return false;
+				}
 
-			if (ret === false) {
-				return false;
-			}
-
-			if (obj.helpers) {
-				$.each(obj.helpers, function (helper, opts) {
-					if (opts && F.helpers[helper] && $.isFunction(F.helpers[helper][event])) {
-						F.helpers[helper][event]($.extend(true, {}, F.helpers[helper].defaults, opts), obj);
-					}
-				});
+				if (obj.helpers) {
+					$.each(obj.helpers, function (helper, opts) {
+						if (opts && F.helpers[helper] && $.isFunction(F.helpers[helper][event])) {
+							F.helpers[helper][event]($.extend(true, {}, F.helpers[helper].defaults, opts), obj);
+						}
+					});
+				}
 			}
 
 			D.trigger(event);
@@ -1426,7 +1430,7 @@
 
 			F.isOpen = F.isOpened = true;
 
-			F.wrap.css('overflow', 'visible').addClass('fancybox-opened');
+			F.wrap.css('overflow', 'visible').addClass('fancybox-opened').hide().show(0);
 
 			F.update();
 
@@ -1465,12 +1469,13 @@
 
 			// Stop the slideshow if this is the last item
 			if (!current.loop && current.index === current.group.length - 1) {
+
 				F.play( false );
 
 			} else if (F.opts.autoPlay && !F.player.isActive) {
 				F.opts.autoPlay = false;
 
-				F.play();
+				F.play(true);
 			}
 		},
 
